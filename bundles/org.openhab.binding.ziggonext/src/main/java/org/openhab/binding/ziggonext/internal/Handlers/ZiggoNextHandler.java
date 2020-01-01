@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,18 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ziggonext.internal;
-
-import static org.openhab.binding.ziggonext.internal.ZiggoNextBindingConstants.*;
+package org.openhab.binding.ziggonext.internal.Handlers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.smarthome.core.thing.ChannelUID;
-import org.eclipse.smarthome.core.thing.Thing;
-import org.eclipse.smarthome.core.thing.ThingStatus;
-import org.eclipse.smarthome.core.thing.binding.BaseThingHandler;
-import org.eclipse.smarthome.core.types.Command;
-import org.eclipse.smarthome.core.types.RefreshType;
+import org.openhab.binding.ziggonext.internal.Configurations.ZiggoNextConfiguration;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,25 +44,25 @@ public class ZiggoNextHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (CHANNEL_1.equals(channelUID.getId())) {
-            if (command instanceof RefreshType) {
-                // TODO: handle data refresh
-            }
-
-            // TODO: handle command
-
-            // Note: if communication with thing fails for some reason,
-            // indicate that by setting the status with detail information:
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-            // "Could not control device at IP address x.x.x.x");
+        // if (CHANNEL_1.equals(channelUID.getId())) {
+        if (command instanceof RefreshType) {
+            // TODO: handle data refresh
         }
+
+        // TODO: handle command
+
+        // Note: if communication with thing fails for some reason,
+        // indicate that by setting the status with detail information:
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+        // "Could not control device at IP address x.x.x.x");
+        // }
     }
 
     @Override
     public void initialize() {
-        // logger.debug("Start initializing!");
-        config = getConfigAs(ZiggoNextConfiguration.class);
+        logger.debug(String.format("Start initializing Ziggo Next Binding with Thing: {0}", thing.getLabel()));
 
+        config = getConfigAs(ZiggoNextConfiguration.class);
         // TODO: Initialize the handler.
         // The framework requires you to return from this method quickly. Also, before leaving this method a thing
         // status from one of ONLINE, OFFLINE or UNKNOWN must be set. This might already be the real thing status in
@@ -78,13 +78,8 @@ public class ZiggoNextHandler extends BaseThingHandler {
 
         // Example for background initialization:
         scheduler.execute(() -> {
-            boolean thingReachable = true; // <background task with long running initialization here>
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
+            initializeThing();
+            logger.debug(String.format("Finished initializing Ziggo Next Binding with Thing: {0}!", thing.getLabel()));
         });
 
         // logger.debug("Finished initializing!");
@@ -94,5 +89,25 @@ public class ZiggoNextHandler extends BaseThingHandler {
         // Add a description to give user information to understand why thing does not work as expected. E.g.
         // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
         // "Can not access device as username and/or password are invalid");
+    }
+
+    private ThingStatus initializeThing() {
+
+        if (config == null || config.ziggoAccountUsername.isBlank() || config.ziggoAccountPassword.isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No configuration is set");
+        }
+
+        // Get a session by doing http post request to: SESSION_URL with body:
+        // {
+        // username: ziggoUsername,
+        // password: ziggoPassword
+        // }
+        // On Error:
+        // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, message);
+
+        // Get token (result.oespToken) and household id (result.customer.householdId) from result json.
+
+        // use the household id and token to connect to mqqt
+        return ThingStatus.UNKNOWN;
     }
 }

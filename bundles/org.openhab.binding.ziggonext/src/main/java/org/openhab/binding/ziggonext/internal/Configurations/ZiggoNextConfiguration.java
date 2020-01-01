@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2020 Contributors to the openHAB project
+ * Copyright (c) 2010-2019 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.ziggonext.internal;
+package org.openhab.binding.ziggonext.internal.Configurations;
 
 /**
  * The {@link ZiggoNextConfiguration} class contains fields mapping thing configuration parameters.
@@ -19,8 +19,6 @@ package org.openhab.binding.ziggonext.internal;
  */
 public class ZiggoNextConfiguration {
 
-    /**
-     * Sample configuration parameter. Replace with your own.
-     */
-    public String config1;
+    public String ziggoAccountUsername;
+    public String ziggoAccountPassword;
 }
